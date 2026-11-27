@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
-"""Build web_ui.h (PROGMEM, served by the ESP32) from the standalone index.html.
+"""Build firmware/WaterQualityMonitor/web_ui.h from web/index.html.
 
-Usage: python3 make_web_ui.py
+Usage: python3 tools/make_web_ui.py
 Keep index.html and web_ui.h in sync so USB and Wi-Fi modes use the same dashboard.
 """
 import pathlib
 import sys
 
-ROOT = pathlib.Path(__file__).resolve().parent
+ROOT = pathlib.Path(__file__).resolve().parent.parent
+SRC = ROOT / "web" / "index.html"
+DST = ROOT / "firmware" / "WaterQualityMonitor" / "web_ui.h"
 DELIM = "AQUAUI"
 MAX_LITERAL = 60000  # keep each raw-string chunk well below MSVC-style limits; GCC has none, split anyway for safety
 
@@ -34,11 +36,11 @@ def build_header(html: str) -> str:
 
 
 def main():
-    html = (ROOT / "index.html").read_text(encoding="utf-8")
+    html = SRC.read_text(encoding="utf-8")
     if "</script" not in html.lower():
         sys.exit("ERROR: index.html does not contain a script block.")
     hdr = build_header(html)
-    (ROOT / "web_ui.h").write_text(hdr, encoding="utf-8")
+    DST.write_text(hdr, encoding="utf-8")
     print("web_ui.h: %d bytes" % len(hdr.encode()))
 
 
