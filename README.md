@@ -135,6 +135,25 @@ Run the command in the repository directory, then open **http://localhost:5500**
 
 History is held only in the open browser tab (up to 5,000 readings); it is not saved by the ESP32 and is lost when the page is reloaded or closed. Export a CSV to retain it.
 
+### Dashboard UI previews
+
+The screenshots below show the dashboard while disconnected from the ESP32. Live values and chart traces appear after a device is connected.
+
+<table>
+  <tr>
+    <td align="center"><strong>Dashboard</strong><br><img src="docs/assets/ui/dashboard.png" alt="Dashboard showing connection controls and four sensor cards" width="600"></td>
+    <td align="center"><strong>Analytics</strong><br><img src="docs/assets/ui/analytics.png" alt="Analytics page with four sensor charts" width="600"></td>
+  </tr>
+  <tr>
+    <td align="center"><strong>Calibration</strong><br><img src="docs/assets/ui/calibration.png" alt="pH calibration page with buffer points and save controls" width="600"></td>
+    <td align="center"><strong>History</strong><br><img src="docs/assets/ui/history.png" alt="History page with CSV export and reading table" width="600"></td>
+  </tr>
+  <tr>
+    <td align="center"><strong>Settings</strong><br><img src="docs/assets/ui/settings.png" alt="Settings page for assessment ranges and browser support" width="600"></td>
+    <td align="center"><strong>More project visuals</strong><br><a href="docs/assets/video/project-demo.mp4">View the project demonstration video</a></td>
+  </tr>
+</table>
+
 ## Calibration and settings
 
 Calibration and target settings are stored in ESP32 flash and persist across power cycles. The firmware verifies saved values by reading them back. Use the dashboard's **Calibration** and **Settings** views and wait for the reading to stabilize before capturing a calibration point.
@@ -180,6 +199,7 @@ The browser dashboard is the recommended client for calibration and settings, as
     └── assets/
         ├── images/            # Hardware and project photos
         ├── models/            # Enclosure CAD and STL exports
+        ├── ui/                # Dashboard, analytics, calibration, history, and settings screenshots
         └── video/             # Project demonstration video
 ```
 
