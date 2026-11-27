@@ -1,33 +1,15 @@
 #!/usr/bin/env python3
-"""Build index.html (standalone) and web_ui.h (PROGMEM, served by the ESP32) from src/.
+"""Build web_ui.h (PROGMEM, served by the ESP32) from the standalone index.html.
 
-Usage:  python3 make_web_ui.py
-Both outputs contain the SAME HTML, so the browser-only (USB) and ESP32-served (Wi-Fi) dashboards are identical.
+Usage: python3 make_web_ui.py
+Keep index.html and web_ui.h in sync so USB and Wi-Fi modes use the same dashboard.
 """
-import pathlib, sys
+import pathlib
+import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent
-SRC = ROOT / "src"
 DELIM = "AQUAUI"
 MAX_LITERAL = 60000  # keep each raw-string chunk well below MSVC-style limits; GCC has none, split anyway for safety
-
-
-def build_html() -> str:
-    css = (SRC / "style.css").read_text(encoding="utf-8")
-    body = (SRC / "body.html").read_text(encoding="utf-8")
-    js = (SRC / "app1.js").read_text(encoding="utf-8") + "\n" + (SRC / "app2.js").read_text(encoding="utf-8")
-    if "</script" in js.lower():
-        sys.exit("ERROR: '</script' found inside JavaScript; it would end the script block early.")
-    return (
-        "<!DOCTYPE html>\n"
-        '<html lang="en" data-theme="dark">\n<head>\n<meta charset="utf-8">\n'
-        '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'
-        '<meta name="color-scheme" content="dark light">\n'
-        "<title>AQUA MONITOR</title>\n"
-        '<link rel="icon" href="data:,">\n'
-        "<style>\n" + css + "\n</style>\n</head>\n<body>\n" + body + "\n"
-        "<script>\n(function () {\n'use strict';\n" + js + "\n})();\n</script>\n</body>\n</html>\n"
-    )
 
 
 def build_header(html: str) -> str:
@@ -52,12 +34,12 @@ def build_header(html: str) -> str:
 
 
 def main():
-    html = build_html()
-    (ROOT / "index.html").write_text(html, encoding="utf-8")
+    html = (ROOT / "index.html").read_text(encoding="utf-8")
+    if "</script" not in html.lower():
+        sys.exit("ERROR: index.html does not contain a script block.")
     hdr = build_header(html)
     (ROOT / "web_ui.h").write_text(hdr, encoding="utf-8")
-    (ROOT / "WaterQualityMonitor" / "web_ui.h").write_text(hdr, encoding="utf-8")
-    print("index.html: %d bytes | web_ui.h: %d bytes" % (len(html.encode()), len(hdr.encode())))
+    print("web_ui.h: %d bytes" % len(hdr.encode()))
 
 
 if __name__ == "__main__":
